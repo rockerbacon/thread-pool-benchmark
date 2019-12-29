@@ -6,8 +6,8 @@
 #include <vector>
 
 #define THREADS std::thread::hardware_concurrency()
-#define TASKS_PER_RUN 20'000
-#define RUNS 1'000
+#define TASKS_PER_RUN 100'000
+#define RUNS 100
 
 #define SETUP_BENCHMARK()\
 	TerminalObserver terminal_observer;\

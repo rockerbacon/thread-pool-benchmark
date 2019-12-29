@@ -6,8 +6,8 @@
 #include <vector>
 
 #define THREADS std::thread::hardware_concurrency()
-#define TASKS_PER_RUN 20'000
-#define RUNS 1'000
+#define TASKS_PER_RUN 100'000
+#define RUNS 100
 
 #define SETUP_BENCHMARK()\
 	TerminalObserver terminal_observer;\
@@ -41,7 +41,7 @@ int main() {
 
 		run = 0;
 		parallel_tools::thread_pool pool(threads);
-		benchmark("rockerbacon/parallel-tools with void() method", RUNS) {
+		benchmark("rockerbacon/parallel-tools with void(int, float) method", RUNS) {
 			vector<future<void>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
 			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
 			vector<stopwatch> stopwatches(TASKS_PER_RUN);
@@ -74,7 +74,7 @@ int main() {
 
 		run = 0;
 		ThreadPool pool(threads);
-		benchmark("progschj/ThreadPool with void() method", RUNS) {
+		benchmark("progschj/ThreadPool with void(int, float) method", RUNS) {
 			vector<future<void>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
 			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
 			vector<stopwatch> stopwatches(TASKS_PER_RUN);
