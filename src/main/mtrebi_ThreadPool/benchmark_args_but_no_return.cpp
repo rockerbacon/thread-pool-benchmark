@@ -1,9 +1,9 @@
 #include <stopwatch/stopwatch.h>
 #include <cpp-benchmark/benchmark.h>
-#include <parallel-tools/thread_pool.h>
-#include <ThreadPool/ThreadPool.h>
 #include <thread>
 #include <vector>
+
+#include <thread-pool/ThreadPool.h>
 
 #define THREADS std::thread::hardware_concurrency()
 #define TASKS_PER_RUN 100'000
@@ -40,9 +40,9 @@ int main() {
 		SETUP_BENCHMARK();
 
 		run = 0;
-		parallel_tools::thread_pool pool(threads);
-		benchmark("rockerbacon/parallel-tools with float(int, float) method", RUNS) {
-			vector<parallel_tools::compound_future<float>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
+		ThreadPool pool(threads); pool.init();
+		benchmark("mtrebi/thread-pool with void(int, float) method", RUNS) {
+			vector<future<void>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
 			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
 			vector<stopwatch> stopwatches(TASKS_PER_RUN);
 			stopwatch stopwatch;
@@ -51,56 +51,23 @@ int main() {
 				auto task = [
 					&consumption_time = tasks_consumption_time[i],
 				   	&stopwatch = stopwatches[i]
-				] (int a, float b){
+				] ([[maybe_unused]] int a, [[maybe_unused]] float b){
 					consumption_time = stopwatch.lap_time();
-					return a+b;
 				};
 
-				tasks_futures.emplace_back(pool.exec(task, 2, 4));
+				tasks_futures.emplace_back(pool.submit(task, 2, 4));
 			}
 			production_time = stopwatch.lap_time();
 
 			for (auto& future : tasks_futures) {
-				future.get();
+				future.wait();
 			}
 			consumption_time = *max_element(tasks_consumption_time.begin(), tasks_consumption_time.end());
 
 			run++;
 			progress = (float)run/RUNS*100.0f;
 		}
-	}
 
-	{
-		SETUP_BENCHMARK();
-
-		run = 0;
-		ThreadPool pool(threads);
-		benchmark("progschj/ThreadPool with float(int, float) method", RUNS) {
-			vector<future<float>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
-			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
-			vector<stopwatch> stopwatches(TASKS_PER_RUN);
-			stopwatch stopwatch;
-
-			for (unsigned i = 0; i < TASKS_PER_RUN; i++) {
-				auto task = [
-					&consumption_time = tasks_consumption_time[i],
-				   	&stopwatch = stopwatches[i]
-				] (int a, float b){
-					consumption_time = stopwatch.lap_time();
-					return a+b;
-				};
-
-				tasks_futures.emplace_back(pool.enqueue(task, 2, 4));
-			}
-			production_time = stopwatch.lap_time();
-
-			for (auto& future : tasks_futures) {
-				future.get();
-			}
-			consumption_time = *max_element(tasks_consumption_time.begin(), tasks_consumption_time.end());
-
-			run++;
-			progress = (float)run/RUNS*100.0f;
-		}
+		pool.shutdown();
 	}
 }
