@@ -1,9 +1,9 @@
 #include <stopwatch/stopwatch.h>
 #include <cpp-benchmark/benchmark.h>
-#include <parallel-tools/thread_pool.h>
-#include <ThreadPool/ThreadPool.h>
 #include <thread>
 #include <vector>
+
+#include <parallel-tools/thread_pool.h>
 
 #define THREADS std::thread::hardware_concurrency()
 #define TASKS_PER_RUN 100'000
@@ -56,39 +56,6 @@ int main() {
 				};
 
 				tasks_futures.emplace_back(pool.exec(task));
-			}
-			production_time = stopwatch.lap_time();
-
-			for (auto& future : tasks_futures) {
-				future.wait();
-			}
-			consumption_time = *max_element(tasks_consumption_time.begin(), tasks_consumption_time.end());
-
-			run++;
-			progress = (float)run/RUNS*100.0f;
-		}
-	}
-
-	{
-		SETUP_BENCHMARK();
-
-		run = 0;
-		ThreadPool pool(threads);
-		benchmark("progschj/ThreadPool with void() method", RUNS) {
-			vector<future<void>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
-			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
-			vector<stopwatch> stopwatches(TASKS_PER_RUN);
-			stopwatch stopwatch;
-
-			for (unsigned i = 0; i < TASKS_PER_RUN; i++) {
-				auto task = [
-					&consumption_time = tasks_consumption_time[i],
-				   	&stopwatch = stopwatches[i]
-				] {
-					consumption_time = stopwatch.lap_time();
-				};
-
-				tasks_futures.emplace_back(pool.enqueue(task));
 			}
 			production_time = stopwatch.lap_time();
 
