@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include <thread-pool/ThreadPool.h>
+#include <mtrebi/ThreadPool.h>
 
 #define THREADS std::thread::hardware_concurrency()
 #define TASKS_PER_RUN 100'000

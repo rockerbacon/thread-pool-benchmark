@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include <thread-pool/ThreadPool.h>
+#include <rockerbacon/thread_pool.h>
 
 #define THREADS std::thread::hardware_concurrency()
 #define TASKS_PER_RUN 100'000
@@ -40,9 +40,9 @@ int main() {
 		SETUP_BENCHMARK();
 
 		run = 0;
-		ThreadPool pool(threads); pool.init();
-		benchmark("mtrebi/thread-pool with float(int, float) method", RUNS) {
-			vector<future<float>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
+		parallel_tools::thread_pool pool(threads);
+		benchmark("rockerbacon/parallel-tools with float(int, float) method", RUNS) {
+			vector<std::future<float>> tasks_futures; tasks_futures.reserve(TASKS_PER_RUN);
 			vector<chrono::high_resolution_clock::duration> tasks_consumption_time(TASKS_PER_RUN);
 			vector<stopwatch> stopwatches(TASKS_PER_RUN);
 			stopwatch stopwatch;
@@ -56,7 +56,7 @@ int main() {
 					return a+b;
 				};
 
-				tasks_futures.emplace_back(pool.submit(task, 2, 4));
+				tasks_futures.emplace_back(pool.exec(task, 2, 4));
 			}
 			production_time = stopwatch.lap_time();
 
@@ -68,7 +68,5 @@ int main() {
 			run++;
 			progress = (float)run/RUNS*100.0f;
 		}
-
-		pool.shutdown();
 	}
 }
