@@ -2,7 +2,6 @@
 
 #include <stopwatch/stopwatch.h>
 #include <chrono>
-#include <cpp-benchmark/benchmark.h>
 
 using namespace std;
 using namespace benchmark;
@@ -18,12 +17,13 @@ using namespace benchmark;
 )\
 	SETUP_BENCHMARK(INSTANTIATE_POOL);\
 	RUN_BENCHMARK(\
-		POOL_IMPLEMENTATION + " with void() method",\
+		POOL_IMPLEMENTATION + " with void() method"s,\
 		RUNS,\
 		TASK_COUNT,\
-		void, (),\
-		PUSH_TASK,\
-		,\
-		DESTROY_POOL\
+		DESTROY_POOL,\
+		void,\
+		(),\
+		/* no task */,\
+		PUSH_TASK, /* no args */\
 	)\
 

@@ -5,10 +5,10 @@
 
 int main (void) {
 	BENCHMARK_VOID_SIGNATURE(
-		"rockerbacon/parallel-tools"s,
+		"rockerbacon/parallel-tools",
 		parallel_tools::thread_pool pool(THREADS),
 		pool.exec,
-
+		/* no manual destruction */
 	);
 	return 0;
 }

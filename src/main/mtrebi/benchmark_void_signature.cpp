@@ -5,7 +5,7 @@
 
 int main() {
 	BENCHMARK_VOID_SIGNATURE(
-		"mtrebi/thread-pool"s,
+		"mtrebi/thread-pool",
 		ThreadPool pool(THREADS); pool.init(),
 		pool.submit,
 		pool.shutdown()

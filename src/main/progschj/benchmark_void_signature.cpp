@@ -5,10 +5,10 @@
 
 int main() {
 	BENCHMARK_VOID_SIGNATURE(
-		"progschj/ThreadPool"s,
+		"progschj/ThreadPool",
 		ThreadPool pool(THREADS),
 		pool.enqueue,
-
+		/* no manual destruction */
 	);
 	return 0;
 }

@@ -38,14 +38,15 @@
 	TITLE,\
 	RUNS,\
 	TASK_COUNT,\
-	RETURN_SIGNATURE,\
+	DESTROY_POOL,\
+	RETURN_TYPE,\
 	ARGS_SIGNATURE,\
-	PUSH_TASK,\
 	TASK,\
-	DESTROY_POOL\
+	PUSH_TASK,\
+	...\
 )\
 	benchmark(TITLE, RUNS) {\
-		std::vector<std::future<RETURN_SIGNATURE>> tasks_futures;\
+		std::vector<std::future<RETURN_TYPE>> tasks_futures;\
 		tasks_futures.reserve(TASK_COUNT);\
 		vector<decltype(consumption_time)> consumption_times(TASK_COUNT);\
 		vector<stopwatch> tasks_stopwatches(TASK_COUNT);\
@@ -58,8 +59,9 @@
 					&stopwatch = tasks_stopwatches[i]\
 				] ARGS_SIGNATURE {\
 					consumption_time = stopwatch.lap_time();\
-					TASK\
+					TASK;\
 				}\
+				__VA_ARGS__\
 			);\
 			tasks_futures.emplace_back(std::move(future));\
 		}\
